@@ -1,6 +1,17 @@
 //! UI components for earthworks visualization.
 //!
-//! Provides timeline and playback controls for plan execution.
+//! Provides:
+//! - Timeline and playback controls for plan execution
+//! - RTS-style selection UI with unit info and command card
+//! - Minimap display
+
+mod minimap;
+mod selection;
+
+pub use minimap::{MinimapContainer, MinimapPlugin, MinimapState};
+pub use selection::{
+    CommandButton, MachineCommand, SelectionPanel, SelectionState, SelectionUiPlugin, UnitPortrait,
+};
 
 use bevy_app::prelude::*;
 use bevy_camera::prelude::Visibility;
@@ -91,7 +102,6 @@ const TIMELINE_BAR_BG: Color = Color::srgba(0.2, 0.2, 0.2, 1.0);
 const TIMELINE_PROGRESS: Color = Color::srgba(0.3, 0.6, 0.9, 1.0);
 const BUTTON_BG: Color = Color::srgba(0.25, 0.25, 0.25, 1.0);
 const BUTTON_HOVER: Color = Color::srgba(0.35, 0.35, 0.35, 1.0);
-const BUTTON_PRESSED: Color = Color::srgba(0.15, 0.15, 0.15, 1.0);
 const BUTTON_ACTIVE: Color = Color::srgba(0.2, 0.5, 0.8, 1.0);
 const TEXT_COLOR: Color = Color::srgba(0.9, 0.9, 0.9, 1.0);
 const SCRUBBER_COLOR: Color = Color::srgba(0.9, 0.9, 0.9, 1.0);

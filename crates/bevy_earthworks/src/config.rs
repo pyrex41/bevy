@@ -50,6 +50,10 @@ pub struct EarthworksConfig {
     /// Whether to enable achievement particle effects.
     /// Default: true
     pub enable_achievement_effects: bool,
+
+    /// World bounds for the minimap display (min_x, min_z, max_x, max_z).
+    /// Default: (-50.0, -50.0, 50.0, 50.0)
+    pub minimap_world_bounds: (f32, f32, f32, f32),
 }
 
 impl Default for EarthworksConfig {
@@ -66,6 +70,7 @@ impl Default for EarthworksConfig {
             show_ui: true,
             show_zyns_hud: true,
             enable_achievement_effects: true,
+            minimap_world_bounds: (-50.0, -50.0, 50.0, 50.0),
         }
     }
 }
