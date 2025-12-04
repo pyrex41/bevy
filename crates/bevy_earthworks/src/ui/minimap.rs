@@ -16,20 +16,23 @@ use bevy_ui::prelude::*;
 
 use crate::config::EarthworksConfig;
 use crate::machines::{Machine, MachineType};
-use crate::terrain::VoxelTerrain;
 
 /// Plugin for the minimap UI.
 pub struct MinimapPlugin;
 
 impl Plugin for MinimapPlugin {
     fn build(&self, app: &mut App) {
-        app.init_resource::<MinimapState>()
-            .add_systems(Startup, spawn_minimap)
+        app.add_systems(Startup, (init_minimap_state, spawn_minimap).chain())
             .add_systems(
                 Update,
                 (update_minimap_visibility, update_minimap_content).chain(),
             );
     }
+}
+
+/// Initializes the minimap state from config.
+fn init_minimap_state(mut commands: Commands, config: Res<EarthworksConfig>) {
+    commands.insert_resource(MinimapState::from_config(&config));
 }
 
 /// Minimap configuration and state.
@@ -40,9 +43,22 @@ pub struct MinimapState {
     /// Size of the minimap in pixels.
     pub size: f32,
     /// World bounds to display (min_x, min_z, max_x, max_z).
+    /// Initialized from `EarthworksConfig::minimap_world_bounds`.
     pub world_bounds: (f32, f32, f32, f32),
     /// Zoom level (1.0 = fit world bounds).
     pub zoom: f32,
+}
+
+impl MinimapState {
+    /// Creates a new MinimapState from the given config.
+    pub fn from_config(config: &EarthworksConfig) -> Self {
+        Self {
+            visible: true,
+            size: 200.0,
+            world_bounds: config.minimap_world_bounds,
+            zoom: 1.0,
+        }
+    }
 }
 
 impl Default for MinimapState {
@@ -78,9 +94,6 @@ pub struct MinimapViewport;
 // UI Colors
 const MINIMAP_BG: Color = Color::srgba(0.1, 0.15, 0.1, 0.9);
 const MINIMAP_BORDER: Color = Color::srgba(0.3, 0.4, 0.3, 1.0);
-const TERRAIN_LOW: Color = Color::srgba(0.3, 0.25, 0.2, 1.0); // Brown for low terrain
-const TERRAIN_HIGH: Color = Color::srgba(0.4, 0.5, 0.35, 1.0); // Green for high terrain
-const BLIP_PLAYER: Color = Color::srgba(0.2, 0.8, 0.2, 1.0); // Green for player units
 const BLIP_EXCAVATOR: Color = Color::srgba(1.0, 0.8, 0.2, 1.0); // Yellow
 const BLIP_DOZER: Color = Color::srgba(1.0, 0.6, 0.2, 1.0); // Orange
 const BLIP_LOADER: Color = Color::srgba(0.2, 0.6, 1.0, 1.0); // Blue

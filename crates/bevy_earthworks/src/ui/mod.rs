@@ -102,7 +102,6 @@ const TIMELINE_BAR_BG: Color = Color::srgba(0.2, 0.2, 0.2, 1.0);
 const TIMELINE_PROGRESS: Color = Color::srgba(0.3, 0.6, 0.9, 1.0);
 const BUTTON_BG: Color = Color::srgba(0.25, 0.25, 0.25, 1.0);
 const BUTTON_HOVER: Color = Color::srgba(0.35, 0.35, 0.35, 1.0);
-const BUTTON_PRESSED: Color = Color::srgba(0.15, 0.15, 0.15, 1.0);
 const BUTTON_ACTIVE: Color = Color::srgba(0.2, 0.5, 0.8, 1.0);
 const TEXT_COLOR: Color = Color::srgba(0.9, 0.9, 0.9, 1.0);
 const SCRUBBER_COLOR: Color = Color::srgba(0.9, 0.9, 0.9, 1.0);
