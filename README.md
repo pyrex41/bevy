@@ -7,6 +7,164 @@
 [![CI](https://github.com/bevyengine/bevy/workflows/CI/badge.svg)](https://github.com/bevyengine/bevy/actions)
 [![Discord](https://img.shields.io/discord/691052431525675048.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/bevy)
 
+---
+
+## TerraFirma Fork - Earthworks & Voxel Terrain
+
+**This is a fork of Bevy adding earthworks/terrain simulation capabilities via the `bevy_earthworks` crate.**
+
+### Quick Start
+
+```bash
+# Run the interactive demo with terrain and construction machines
+cargo run -p bevy_earthworks --example interactive
+
+# Run the minimal example
+cargo run -p bevy_earthworks --example minimal
+```
+
+### What's Added: `bevy_earthworks` Crate
+
+A complete volumetric voxel terrain and construction machine simulation plugin for building earthworks visualization and games.
+
+#### Voxel Terrain System
+- **16³ chunk-based terrain** with efficient sparse storage
+- **8 material types**: Air, Dirt, Clay, Rock, Topsoil, Gravel, Sand, Water
+- **Greedy meshing** algorithm for optimized rendering
+- **Terrain texture atlas** for PBR material support
+- **Async chunk meshing** with task pool for performance
+- **LOD system** based on camera distance
+- **Terrain operations**: excavate spheres, fill boxes, modify individual voxels
+
+#### Construction Machine Simulation
+- **4 machine types**: Excavator, Bulldozer, Wheel Loader, Dump Truck
+- **Work envelopes**: Toroidal (excavators), Rectangular (dozers), Arc (loaders)
+- **Direct control**: WASD movement, blade up/down, rotation
+- **Terrain interaction**: collision detection, terrain following, material pushing
+- **GLTF model pipeline** with procedural geometry fallbacks
+
+#### Plan Execution System
+- **JSON execution plans** for pre-computed machine operations
+- **Actions**: MoveTo, Excavate, Dump, Push, Idle, WaitFor
+- **Timeline playback** with play/pause, seek, speed control (0.5x-4x)
+- **Machine coordination** and dependency handling
+
+#### RTS-Style UI
+- **Minimap** with machine positions and camera viewport indicator
+- **Selection panel** with unit portrait, health bar, status
+- **Command card** (3x3 grid) with hotkey hints
+- **Timeline UI** with playback controls
+- **On-screen HUD**: blade status, load bar, position
+
+#### Visual Effects
+- **HDR rendering** with TonyMcMapface tonemapping
+- **Bloom post-processing** for natural highlights
+- **Distance fog** with atmospheric haze
+- **Shadow cascades** (4 cascades, 150m range)
+- **Camera shake** with trauma-based decay
+- **Orbit camera** with smooth controls
+
+#### Game Systems
+- **Scoring system** with progress tracking
+- **Achievement system** (Zyns) with unlock events
+- **AI agent system** for automated testing
+- **Testing utilities** module
+
+### Controls (Interactive Example)
+
+| Input | Action |
+|-------|--------|
+| **Camera** | |
+| Right mouse drag | Orbit camera |
+| Middle mouse drag | Pan camera |
+| Scroll wheel | Zoom in/out |
+| W/A/S/D | Move camera target |
+| Q/E | Move camera up/down |
+| Shift | Move faster |
+| **Playback** | |
+| Space | Toggle play/pause |
+| R | Reset to start |
+| 1/2/3/4 | Speed 0.5x/1x/2x/4x |
+| **Direct Control** | |
+| Arrow keys | Move machine |
+| Z/X | Blade up/down |
+
+### Architecture
+
+```
+crates/bevy_earthworks/
+├── terrain/       # Voxel terrain system
+│   ├── voxel.rs      # Voxel and VoxelTerrain
+│   ├── chunk.rs      # 16³ chunk storage
+│   ├── meshing.rs    # Simple & greedy meshing
+│   ├── materials.rs  # Material definitions
+│   ├── textures.rs   # Terrain texture atlas
+│   └── operations.rs # Terrain modification
+├── machines/      # Construction machines
+│   ├── components.rs    # Machine, WorkEnvelope, Mobility
+│   ├── direct_control.rs # Player input handling
+│   ├── animation.rs     # Movement animation
+│   └── gizmos.rs        # Work envelope visualization
+├── models/        # GLTF model pipeline
+│   ├── registry.rs   # Model loading registry
+│   ├── procedural.rs # Procedural geometry fallbacks
+│   └── spawner.rs    # Unified machine spawning
+├── plan/          # Execution plans
+│   ├── schema.rs     # Plan data structures
+│   ├── loader.rs     # JSON asset loader
+│   ├── playback.rs   # Playback control
+│   └── executor.rs   # Step execution
+├── ui/            # User interface
+│   ├── mod.rs        # Timeline UI
+│   ├── minimap.rs    # RTS minimap
+│   └── selection.rs  # Selection panel & commands
+├── camera/        # Orbit camera with shake
+├── scoring/       # Progress tracking
+├── zyns/          # Achievement system
+├── testing/       # AI agents & test utilities
+├── effects/       # Visual effects
+└── jobs/          # Job queue system
+```
+
+### Usage Example
+
+```rust
+use bevy::prelude::*;
+use bevy_earthworks::prelude::*;
+
+fn main() {
+    App::new()
+        .add_plugins(DefaultPlugins)
+        .add_plugins(EarthworksPlugin::default())
+        .add_systems(Startup, setup)
+        .run();
+}
+
+fn setup(mut commands: Commands, mut terrain: ResMut<VoxelTerrain>) {
+    // Spawn camera with orbit controls
+    commands.spawn((
+        Camera3d::default(),
+        Transform::from_xyz(30.0, 20.0, 30.0).looking_at(Vec3::ZERO, Vec3::Y),
+        OrbitCamera::new().with_target(Vec3::ZERO).with_distance(40.0),
+    ));
+
+    // Create terrain chunk
+    let mut chunk = Chunk::new();
+    for x in 0..16 {
+        for z in 0..16 {
+            for y in 0..4 {
+                chunk.set(x, y, z, Voxel::solid(MaterialId::Dirt));
+            }
+        }
+    }
+    // ... spawn chunk entity
+}
+```
+
+See [`crates/bevy_earthworks/WALKTHROUGH.md`](crates/bevy_earthworks/WALKTHROUGH.md) for the complete guide.
+
+---
+
 ## What is Bevy?
 
 Bevy is a refreshingly simple data-driven game engine built in Rust. It is free and open-source forever!
